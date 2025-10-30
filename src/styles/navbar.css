@@ -1,0 +1,175 @@
+.custom-navbar {
+  background: linear-gradient(90deg, #1e1e2f, #2b5876, #4e4376);
+  padding: 0.7rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.navbar-logo {
+  width: 38px;
+  height: 38px;
+  margin-right: 10px;
+}
+
+.brand-text {
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  color: #ddd;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: #00c6ff;
+  transform: translateY(-2px);
+}
+
+/* User info */
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.username {
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #00c6ff;
+}
+
+/* Buttons */
+.btn-login {
+  color: #fff;
+  border: 1px solid #00c6ff;
+  padding: 8px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+  background: #00c6ff;
+  color: #fff;
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid #ff7676;
+  color: #ff7676;
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background: #ff7676;
+  color: white;
+}
+
+/* Hamburger menu (mobile) */
+.navbar-toggler {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: none;
+}
+
+.navbar-toggler-icon {
+  width: 25px;
+  height: 3px;
+  background: white;
+  display: block;
+  position: relative;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+  content: "";
+  position: absolute;
+  width: 25px;
+  height: 3px;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.navbar-toggler-icon::before {
+  top: -8px;
+}
+
+.navbar-toggler-icon::after {
+  top: 8px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .navbar-links {
+    position: absolute;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    background: rgba(30, 30, 47, 0.97);
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    display: none;
+  }
+
+  .navbar-links.active {
+    display: flex;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .navbar-user {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .navbar-toggler {
+    display: block;
+  }
+}
