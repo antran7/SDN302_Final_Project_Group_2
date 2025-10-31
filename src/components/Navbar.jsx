@@ -1,62 +1,85 @@
-import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import "../styles/navbar.css";
+import React, { useState } from 'react';
+import { useAuth } from '../Context/AuthContext';
+import { useApp } from '../Context/AppContext';
+import { Bell, User, LogOut, Menu, Settings } from 'lucide-react';
+import '../Styles/navbar.css';
 
-export default function Navbar() {
-  const auth = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-  if (!auth) return null;
+const Navbar = () => {
+  const { user, logout } = useAuth();
+  const { toggleSidebar, notifications } = useApp();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
-  const { user, logout } = auth;
-
-  const toggleMenu = () => setIsOpen(!isOpen);
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
-    <nav className="custom-navbar">
-      <div className="container d-flex align-items-center justify-content-between">
-        <Link to="/" className="navbar-brand d-flex align-items-center">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/1048/1048313.png"
-            alt="logo"
-            className="navbar-logo"
-          />
-          <span className="brand-text">EV Dealer</span>
-        </Link>
-
-        {/* Hamburger button */}
-        <button className="navbar-toggler" onClick={toggleMenu}>
-          <span className="navbar-toggler-icon"></span>
+    <nav className="navbar">
+      <div className="navbar-left">
+        <button className="menu-btn" onClick={toggleSidebar}>
+          <Menu size={24} />
         </button>
+        <h1 className="navbar-title">EV Dealer Management</h1>
+      </div>
 
-        <div className={`navbar-links ${isOpen ? "active" : ""}`}>
-          {user ? (
-            <>
-              <ul className="nav-links">
-                <li><NavLink to="/" className="nav-item">Home</NavLink></li>
-                <li><NavLink to="/vehicles" className="nav-item">Vehicles</NavLink></li>
-                <li><NavLink to="/dealers" className="nav-item">Dealers</NavLink></li>
-                <li><NavLink to="/customers" className="nav-item">Customers</NavLink></li>
-                <li><NavLink to="/reports" className="nav-item">Reports</NavLink></li>
-              </ul>
+      <div className="navbar-right">
+        <div className="notification-container">
+          <button
+            className="notification-btn"
+            onClick={() => setShowNotifications(!showNotifications)}
+          >
+            <Bell size={20} />
+            {notifications.length > 0 && (
+              <span className="notification-badge">{notifications.length}</span>
+            )}
+          </button>
+          {showNotifications && (
+            <div className="notification-dropdown">
+              <div className="notification-header">Thông báo</div>
+              {notifications.length === 0 ? (
+                <div className="notification-empty">Không có thông báo mới</div>
+              ) : (
+                notifications.map(notif => (
+                  <div key={notif.id} className="notification-item">
+                    {notif.message}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </div>
 
-              <div className="navbar-user ms-3">
-                <div className="user-info">
-                  <span className="username">{user.username}</span>
-                  <img
-                    src={`https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`}
-                    alt="avatar"
-                    className="user-avatar"
-                  />
-                </div>
-                <button className="btn-logout" onClick={logout}>Logout</button>
+        <div className="user-container">
+          <button
+            className="user-btn"
+            onClick={() => setShowUserMenu(!showUserMenu)}
+          >
+            <User size={20} />
+            <span className="user-name">{user?.name}</span>
+          </button>
+          {showUserMenu && (
+            <div className="user-dropdown">
+              <div className="user-info">
+                <div className="user-info-name">{user?.name}</div>
+                <div className="user-info-role">{user?.role}</div>
+                <div className="user-info-email">{user?.email}</div>
               </div>
-            </>
-          ) : (
-            <Link to="/login" className="btn-login">Login</Link>
+              <div className="user-menu-divider"></div>
+              <button className="user-menu-item">
+                <Settings size={16} />
+                Cài đặt
+              </button>
+              <button className="user-menu-item logout" onClick={handleLogout}>
+                <LogOut size={16} />
+                Đăng xuất
+              </button>
+            </div>
           )}
         </div>
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;

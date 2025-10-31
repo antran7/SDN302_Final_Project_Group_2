@@ -1,0 +1,163 @@
+.testdrives-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.testdrives-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.testdrives-header h1 {
+  font-size: 2rem;
+  color: #111827;
+}
+
+.testdrives-filters {
+  margin-bottom: 25px;
+}
+
+.testdrives-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.testdrive-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid rgba(229, 231, 235, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.testdrive-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.testdrive-card:hover::after {
+  opacity: 1;
+}
+
+.testdrive-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.testdrive-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.testdrive-date {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.testdrive-date svg {
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.date {
+  font-size: 1rem;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.testdrive-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.info-section h4 {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.info-section p {
+  font-size: 1rem;
+  color: #111827;
+}
+
+.info-section .contact {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.info-section .detail {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.info-section .notes {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.testdrive-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-complete {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  padding: 10px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  justify-content: center;
+}
+
+.btn-complete:hover {
+  background-color: #059669;
+}
+
+@media (max-width: 768px) {
+  .testdrives-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .testdrives-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+}

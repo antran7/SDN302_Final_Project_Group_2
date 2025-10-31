@@ -1,0 +1,357 @@
+.inventory-container {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.inventory-header h1 {
+  font-size: 2rem;
+  color: #111827;
+}
+
+.inventory-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #374151;
+}
+
+.tab-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.tab-btn.active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.inventory-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.stat-card.alert {
+  background-color: #fef2f2;
+  border: 2px solid #fca5a5;
+}
+
+.stat-card svg {
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.stat-card.alert svg {
+  color: #ef4444;
+}
+
+.stat-card h3 {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.stat-number {
+  font-size: 2rem;
+  color: #111827;
+}
+
+.low-stock-alert {
+  background-color: #fef2f2;
+  border: 2px solid #fca5a5;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.low-stock-alert h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #991b1b;
+  margin-bottom: 15px;
+}
+
+.low-stock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.low-stock-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.vehicle-name {
+  color: #111827;
+}
+
+.stock-amount {
+  color: #ef4444;
+}
+
+.btn-restock {
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-restock:hover {
+  background-color: #2563eb;
+}
+
+.inventory-table {
+  background-color: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.inventory-table h3 {
+  font-size: 1.25rem;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.inventory-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.inventory-table th {
+  text-align: left;
+  padding: 12px 15px;
+  background-color: #f9fafb;
+  color: #6b7280;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.inventory-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+}
+
+.stock-number {
+  text-align: center;
+  color: #3b82f6;
+}
+
+.stock-number.total {
+  color: #111827;
+}
+
+.stock-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+}
+
+.dealer-inventory h3 {
+  font-size: 1.5rem;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.dealer-inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.dealer-inventory-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.dealer-inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dealer-inventory-header h4 {
+  font-size: 1.125rem;
+  color: #111827;
+}
+
+.total-stock {
+  color: #3b82f6;
+  font-size: 1.25rem;
+}
+
+.dealer-inventory-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inventory-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f9fafb;
+  border-radius: 6px;
+}
+
+.item-name {
+  font-size: 0.875rem;
+  color: #111827;
+}
+
+.item-quantities {
+  display: flex;
+  gap: 10px;
+  font-size: 0.75rem;
+}
+
+.available {
+  color: #10b981;
+}
+
+.reserved {
+  color: #f59e0b;
+}
+
+.inventory-requests h3 {
+  font-size: 1.5rem;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.requests-table {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.requests-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.requests-table th {
+  text-align: left;
+  padding: 15px 20px;
+  background-color: #f9fafb;
+  color: #6b7280;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.requests-table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+}
+
+.requests-table .quantity {
+  text-align: center;
+  color: #3b82f6;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-approve {
+  padding: 6px 12px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.btn-approve:hover {
+  background-color: #059669;
+}
+
+.btn-reject {
+  padding: 6px 12px;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.btn-reject:hover {
+  background-color: #dc2626;
+}
+
+@media (max-width: 768px) {
+  .inventory-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .inventory-tabs {
+    flex-wrap: wrap;
+  }
+
+  .dealer-inventory-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .requests-table {
+    overflow-x: auto;
+  }
+
+  .requests-table table {
+    min-width: 800px;
+  }
+}
