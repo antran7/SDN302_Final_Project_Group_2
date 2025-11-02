@@ -1,40 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../Context/AuthContext';
-import { Search, Filter, Plus, Edit, Trash2, GitCompare, Loader2 } from 'lucide-react';
-import VehicleDetailModal from '../Components/VehicleDetailModal';
-import ConfirmModal from '../Components/ConfirmModal';
-import { vehiclesService } from '../services/vehicles.service';
-import { toast } from 'sonner';
-import '../Styles/vehicles.css';
-import '../Styles/loading.css';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../Context/AuthContext";
+import {
+  Search,
+  Filter,
+  Plus,
+  Edit,
+  Trash2,
+  GitCompare,
+  Loader2,
+} from "lucide-react";
+import VehicleDetailModal from "../Components/VehicleDetailModal";
+import ConfirmModal from "../Components/ConfirmModal";
+import { vehiclesService } from "../services/vehicles.service";
+import { toast } from "sonner";
+import "../Styles/vehicles.css";
+import "../Styles/loading.css";
 
 const Vehicles = () => {
   const { user } = useAuth();
   const [vehicles, setVehicles] = useState([]);
-  const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [compareMode, setCompareMode] = useState(false);
   const [compareVehicles, setCompareVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [deleteVehicle, setDeleteVehicle] = useState(null);
 
-  const isEVM = user.role === 'Admin' || user.role === 'EVM Staff';
+  const isEVM = user.role === "Admin" || user.role === "EVM Staff";
 
-  // Tải danh sách xe và khuyến mãi
+  // Tải danh sách xe
   useEffect(() => {
     const loadVehicles = async () => {
       try {
         setLoading(true);
         setError(null);
-        const [vehiclesData, promotionsData] = await Promise.all([
-          vehiclesService.getVehicles(),
-          vehiclesService.getVehiclePromotions()
-        ]);
+        const vehiclesData = await vehiclesService.getVehicles();
         setVehicles(vehiclesData);
-        setPromotions(promotionsData);
       } catch (err) {
         setError(err.message);
         toast.error(err.message);
@@ -51,7 +54,9 @@ const Vehicles = () => {
   };
 
   const handleEdit = (vehicle) => {
-    toast.success(`Chức năng chỉnh sửa xe ${vehicle.name} đang được phát triển`);
+    toast.success(
+      `Chức năng chỉnh sửa xe ${vehicle.name} đang được phát triển`
+    );
   };
 
   const handleDeleteClick = (vehicle) => {
@@ -71,28 +76,25 @@ const Vehicles = () => {
     }
   };
 
-  const filteredVehicles = vehicles.filter(vehicle => {
-    const matchesSearch = vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         vehicle.model.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || vehicle.category === selectedCategory;
+  const filteredVehicles = vehicles.filter((vehicle) => {
+    const matchesSearch = vehicle.modelName
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || vehicle.body_type === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
     }).format(amount);
   };
 
-  const getActivePromotions = (vehicleId) => {
-    return promotions.filter(p => 
-      p.vehicleIds.includes(vehicleId) &&
-      new Date(p.endDate) >= new Date()
-    );
-  };  const toggleCompare = (vehicle) => {
-    if (compareVehicles.find(v => v.id === vehicle.id)) {
-      setCompareVehicles(compareVehicles.filter(v => v.id !== vehicle.id));
+  const toggleCompare = (vehicle) => {
+    if (compareVehicles.find((v) => v.id === vehicle.id)) {
+      setCompareVehicles(compareVehicles.filter((v) => v.id !== vehicle.id));
     } else if (compareVehicles.length < 3) {
       setCompareVehicles([...compareVehicles, vehicle]);
     }
@@ -101,10 +103,10 @@ const Vehicles = () => {
   return (
     <div className="vehicles-container">
       <div className="vehicles-header">
-        <h1>{isEVM ? 'Quản lý xe điện' : 'Danh mục xe điện'}</h1>
+        <h1>{isEVM ? "Quản lý xe điện" : "Danh mục xe điện"}</h1>
         <div className="vehicles-actions">
-          <button 
-            className={`compare-btn ${compareMode ? 'active' : ''}`}
+          <button
+            className={`compare-btn ${compareMode ? "active" : ""}`}
             onClick={() => {
               setCompareMode(!compareMode);
               setCompareVehicles([]);
@@ -121,7 +123,6 @@ const Vehicles = () => {
           )}
         </div>
       </div>
-
       <div className="vehicles-filters">
         <div className="search-box">
           <Search size={20} />
@@ -141,23 +142,22 @@ const Vehicles = () => {
           >
             <option value="all">Tất cả loại</option>
             <option value="SUV">SUV</option>
-            <option value="SUV 7 chỗ">SUV 7 chỗ</option>
+            <option value="Sedan">Sedan</option>
             <option value="Hatchback">Hatchback</option>
+            <option value="Crossover">Crossover</option>
+            <option value="Pickup">Pickup</option>
+            <option value="MPV">MPV</option>
           </select>
         </div>
       </div>
-
       {compareMode && compareVehicles.length > 0 && (
         <div className="compare-banner">
           <span>Đã chọn {compareVehicles.length}/3 xe để so sánh</span>
           {compareVehicles.length >= 2 && (
-            <button className="view-compare-btn">
-              Xem so sánh
-            </button>
+            <button className="view-compare-btn">Xem so sánh</button>
           )}
         </div>
       )}
-
       {loading ? (
         <div className="loading-state">
           <Loader2 className="animate-spin" size={48} />
@@ -166,18 +166,19 @@ const Vehicles = () => {
       ) : error ? (
         <div className="error-state">
           <p>{error}</p>
-          <button 
+          <button
             onClick={() => {
               setLoading(true);
               setError(null);
-              vehiclesService.getVehicles()
-                .then(data => setVehicles(data))
-                .catch(err => {
+              vehiclesService
+                .getVehicles()
+                .then((data) => setVehicles(data))
+                .catch((err) => {
                   setError(err.message);
                   toast.error(err.message);
                 })
                 .finally(() => setLoading(false));
-            }} 
+            }}
             className="retry-btn"
           >
             Thử lại
@@ -185,129 +186,140 @@ const Vehicles = () => {
         </div>
       ) : (
         <div className="vehicles-grid">
-          {filteredVehicles.map(vehicle => {
-            const promotions = getActivePromotions(vehicle.id);
-          const isComparing = compareVehicles.find(v => v.id === vehicle.id);
+          {filteredVehicles.map((vehicle) => {
+            const isComparing = compareVehicles.find(
+              (v) => v.id === vehicle.id
+            );
 
-          return (
-            <div 
-              key={vehicle.id} 
-              className={`vehicle-card ${isComparing ? 'comparing' : ''}`}
-            >
-              <div className="vehicle-image">
-                <img 
-                  src={`https://via.placeholder.com/400x250?text=${vehicle.name}`} 
-                  alt={vehicle.name}
-                />
-                {promotions.length > 0 && (
-                  <div className="promotion-badge">
-                    Khuyến mãi
-                  </div>
-                )}
-                {compareMode && (
-                  <button 
-                    className={`compare-checkbox ${isComparing ? 'checked' : ''}`}
-                    onClick={() => toggleCompare(vehicle)}
-                  >
-                    {isComparing && '✓'}
-                  </button>
-                )}
-              </div>
-
-              <div className="vehicle-info">
-                <h3>{vehicle.name}</h3>
-                <p className="vehicle-version">{vehicle.version} - {vehicle.category}</p>
-
-                <div className="vehicle-specs">
-                  <div className="spec-item">
-                    <span className="spec-label">Pin:</span>
-                    <span className="spec-value">{vehicle.battery}</span>
-                  </div>
-                  <div className="spec-item">
-                    <span className="spec-label">Phạm vi:</span>
-                    <span className="spec-value">{vehicle.range}</span>
-                  </div>
-                  <div className="spec-item">
-                    <span className="spec-label">Động cơ:</span>
-                    <span className="spec-value">{vehicle.motor}</span>
-                  </div>
-                  <div className="spec-item">
-                    <span className="spec-label">Chỗ ngồi:</span>
-                    <span className="spec-value">{vehicle.seats} chỗ</span>
-                  </div>
+            return (
+              <div
+                key={vehicle._id}
+                className={`vehicle-card ${isComparing ? "comparing" : ""}`}
+              >
+                <div className="vehicle-image">
+                  <img
+                    src={
+                      vehicle.imageUrl ||
+                      `https://via.placeholder.com/400x250?text=${vehicle.modelName}`
+                    }
+                    alt={vehicle.modelName}
+                  />
+                  {compareMode && (
+                    <button
+                      className={`compare-checkbox ${
+                        isComparing ? "checked" : ""
+                      }`}
+                      onClick={() => toggleCompare(vehicle)}
+                    >
+                      {isComparing && "✓"}
+                    </button>
+                  )}
                 </div>
 
-                <div className="vehicle-colors">
+                <div className="vehicle-info">
+                  <div className="vehicle-header">
+                    <h3>{vehicle.modelName}</h3>
+                    <p className="vehicle-type">{vehicle.bodyType}</p>
+                  </div>
+
+                  <div className="vehicle-specs">
+                    <div className="spec-item">
+                      <span className="spec-label">Số chỗ</span>
+                      <span className="spec-value">{vehicle.seats} chỗ</span>
+                    </div>
+                    <div className="spec-item">
+                      <span className="spec-label">Số cửa</span>
+                      <span className="spec-value">{vehicle.doors} cửa</span>
+                    </div>
+                    <div className="spec-item">
+                      <span className="spec-label">Bảo hành</span>
+                      <span className="spec-value">
+                        {vehicle.warranty_years} năm
+                      </span>
+                    </div>
+                    <div className="spec-item">
+                      <span className="spec-label">Thông số</span>
+                      <span className="spec-value">Chi tiết</span>
+                    </div>
+                  </div>
+
+                  {vehicle.description && (
+                    <p className="vehicle-description">{vehicle.description}</p>
+                  )}
+
+                  {/* <div className="vehicle-colors">
                   <span>Màu sắc:</span>
                   <div className="color-list">
                     {vehicle.colors.map(color => (
                       <span key={color} className="color-badge">{color}</span>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
-                {isEVM ? (
-                  <div className="vehicle-prices">
-                    <div className="price-row">
-                      <span>Giá bán lẻ:</span>
-                      <span className="price">{formatCurrency(vehicle.price)}</span>
-                    </div>
-                    <div className="price-row">
-                      <span>Giá sỉ:</span>
-                      <span className="price wholesale">{formatCurrency(vehicle.wholesalePrice)}</span>
-                    </div>
-                    <div className="price-row">
-                      <span>Tồn kho:</span>
-                      <span className="stock">{vehicle.stock} xe</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="vehicle-price">
-                    <span className="price-label">Giá bán:</span>
-                    <span className="price">{formatCurrency(vehicle.price)}</span>
-                  </div>
-                )}
-
-                {promotions.length > 0 && (
-                  <div className="vehicle-promotions">
-                    {promotions.map(promo => (
-                      <div key={promo.id} className="promo-item">
-                        {promo.discount > 0 
-                          ? `Giảm ${formatCurrency(promo.discount)}`
-                          : `Giảm ${promo.discountPercent}%`
-                        }
+                  {isEVM ? (
+                    <div className="vehicle-prices">
+                      <div className="price-row">
+                        <span>Giá bán lẻ:</span>
+                        <span className="price">
+                          {formatCurrency(vehicle.price)}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="vehicle-actions">
-                  <button className="btn-detail" onClick={() => handleViewDetail(vehicle)}>
-                    Chi tiết
-                  </button>
-                  {isEVM && (
-                    <>
-                      <button className="btn-icon" onClick={() => handleEdit(vehicle)}>
-                        <Edit size={18} />
-                      </button>
-                      <button className="btn-icon danger" onClick={() => handleDeleteClick(vehicle)}>
-                        <Trash2 size={18} />
-                      </button>
-                    </>
+                      <div className="price-row">
+                        <span>Giá sỉ:</span>
+                        <span className="price wholesale">
+                          {formatCurrency(vehicle.wholesalePrice)}
+                        </span>
+                      </div>
+                      <div className="price-row">
+                        <span>Tồn kho:</span>
+                        <span className="stock">{vehicle.stock} xe</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="vehicle-price">
+                      <span className="price-label">Giá bán:</span>
+                      <span className="price">
+                        {formatCurrency(vehicle.price)}
+                      </span>
+                    </div>
                   )}
+
+                  <div className="vehicle-actions">
+                    <button
+                      className="btn-detail"
+                      onClick={() => handleViewDetail(vehicle)}
+                    >
+                      Chi tiết
+                    </button>
+                    {isEVM && (
+                      <>
+                        <button
+                          className="btn-icon"
+                          onClick={() => handleEdit(vehicle)}
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button
+                          className="btn-icon danger"
+                          onClick={() => handleDeleteClick(vehicle)}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
+            );
           })}
         </div>
-      )}      {selectedVehicle && (
-        <VehicleDetailModal 
-          vehicle={selectedVehicle} 
-          onClose={() => setSelectedVehicle(null)} 
+      )}{" "}
+      {selectedVehicle && (
+        <VehicleDetailModal
+          vehicle={selectedVehicle}
+          onClose={() => setSelectedVehicle(null)}
         />
       )}
-
       {deleteVehicle && (
         <ConfirmModal
           title="Xác nhận xóa"

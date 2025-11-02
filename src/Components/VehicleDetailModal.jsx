@@ -5,18 +5,21 @@ import '../Styles/modal.css';
 const VehicleDetailModal = ({ vehicle, onClose }) => {
   if (!vehicle) return null;
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(amount);
+  const formatDate = (iso) => {
+    if (!iso) return '-';
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString('vi-VN');
+    } catch {
+      return iso;
+    }
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Chi tiết xe - {vehicle.name}</h2>
+          <h2>Chi tiết xe - {vehicle.modelName || vehicle._id}</h2>
           <button className="modal-close" onClick={onClose}>
             <X size={24} />
           </button>
@@ -24,9 +27,9 @@ const VehicleDetailModal = ({ vehicle, onClose }) => {
 
         <div className="modal-body">
           <div className="detail-image">
-            <img 
-              src={`https://via.placeholder.com/600x400?text=${vehicle.name}`} 
-              alt={vehicle.name}
+            <img
+              src={vehicle.imageUrl || `https://via.placeholder.com/800x450?text=${encodeURIComponent(vehicle.modelName || 'Vehicle')}`}
+              alt={vehicle.modelName || 'vehicle'}
             />
           </div>
 
@@ -34,81 +37,52 @@ const VehicleDetailModal = ({ vehicle, onClose }) => {
             <div className="detail-section">
               <h3>Thông tin cơ bản</h3>
               <div className="detail-row">
-                <span className="detail-label">Tên xe:</span>
-                <span className="detail-value">{vehicle.name}</span>
+                <span className="detail-label">Mã:</span>
+                <span className="detail-value">{vehicle._id}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Model:</span>
-                <span className="detail-value">{vehicle.model}</span>
+                <span className="detail-label">Tên mẫu:</span>
+                <span className="detail-value">{vehicle.modelName}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Phiên bản:</span>
-                <span className="detail-value">{vehicle.version}</span>
+                <span className="detail-label">Loại thân xe:</span>
+                <span className="detail-value">{vehicle.bodyType || '-'}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Loại xe:</span>
-                <span className="detail-value">{vehicle.category}</span>
+                <span className="detail-label">Số chỗ:</span>
+                <span className="detail-value">{vehicle.seats ?? '-'}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Số chỗ ngồi:</span>
-                <span className="detail-value">{vehicle.seats} chỗ</span>
-              </div>
-            </div>
-
-            <div className="detail-section">
-              <h3>Thông số kỹ thuật</h3>
-              <div className="detail-row">
-                <span className="detail-label">Dung lượng pin:</span>
-                <span className="detail-value">{vehicle.battery}</span>
+                <span className="detail-label">Số cửa:</span>
+                <span className="detail-value">{vehicle.doors ?? '-'}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Phạm vi hoạt động:</span>
-                <span className="detail-value">{vehicle.range}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Công suất động cơ:</span>
-                <span className="detail-value">{vehicle.motor}</span>
-              </div>
-            </div>
-
-            <div className="detail-section">
-              <h3>Giá & Tồn kho</h3>
-              <div className="detail-row">
-                <span className="detail-label">Giá bán lẻ:</span>
-                <span className="detail-value highlight">{formatCurrency(vehicle.price)}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Giá sỉ:</span>
-                <span className="detail-value">{formatCurrency(vehicle.wholesalePrice)}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Tồn kho:</span>
-                <span className="detail-value">{vehicle.stock} xe</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Trạng thái:</span>
-                <span className={`status-badge ${vehicle.status}`}>
-                  {vehicle.status === 'available' ? 'Có sẵn' : 'Hết hàng'}
-                </span>
+                <span className="detail-label">Bảo hành:</span>
+                <span className="detail-value">{vehicle.warranty_years ?? '-'} năm</span>
               </div>
             </div>
 
             <div className="detail-section full-width">
-              <h3>Màu sắc</h3>
-              <div className="color-chips">
-                {vehicle.colors.map((color, index) => (
-                  <span key={index} className="color-chip">{color}</span>
-                ))}
-              </div>
+              <h3>Thông số / Mô tả</h3>
+              {vehicle.specifications ? (
+                <pre className="detail-pre">{vehicle.specifications}</pre>
+              ) : vehicle.description ? (
+                <p className="detail-text">{vehicle.description}</p>
+              ) : (
+                <p className="detail-text">Không có thông tin mô tả.</p>
+              )}
             </div>
 
-            <div className="detail-section full-width">
-              <h3>Tính năng</h3>
-              <ul className="features-list">
-                {vehicle.features.map((feature, index) => (
-                  <li key={index}>{feature}</li>
-                ))}
-              </ul>
+            <div className="detail-section">
+              <h3>Metadata</h3>
+              <div className="detail-row">
+                <span className="detail-label">Tạo lúc:</span>
+                <span className="detail-value">{formatDate(vehicle.created_at)}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Cập nhật:</span>
+                <span className="detail-value">{formatDate(vehicle.updated_at)}</span>
+              </div>
             </div>
           </div>
         </div>

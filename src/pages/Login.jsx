@@ -20,6 +20,7 @@ const Login = () => {
       const response = await authService.login(email, password);
       // Normalize response: some backends return { user, token }, others return user directly
       const userPayload = response?.user || response;
+      localStorage.setItem('token', response.access_token);
       login(userPayload);
       // No imperative navigation here — component will re-render and the check below will redirect
     } catch (error) {
