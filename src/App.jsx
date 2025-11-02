@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./Context/AuthContext";
 import { AppProvider } from "./Context/AppContext";
@@ -24,8 +24,15 @@ import "./Styles/main.css";
 
 const ProtectedLayout = () => {
   const { user, loading } = useAuth();
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    if (!loading) {
+      setIsInitialized(true);
+    }
+  }, [loading]);
+
+  if (loading || !isInitialized) {
     return (
       <div className="loading-screen">
         <div className="loader"></div>
@@ -34,7 +41,10 @@ const ProtectedLayout = () => {
     );
   }
 
-  if (!user) return <Navigate to="/login" />;
+  // Only redirect if we're sure we're initialized and there's no user
+  if (isInitialized && !user) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <div className="app-layout">

@@ -1,32 +1,35 @@
 import React, { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
-import { mockUsers } from '../mockData/users';
 import { Car } from 'lucide-react';
+import { authService } from '../services/auth.service';
 import '../Styles/login.css';
 
 const Login = () => {
-  const { login } = useAuth();
-  const [username, setUsername] = useState('');
+  const { login, user } = useAuth();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    console.log(email, password);
 
-    // Mock authentication
-    const user = mockUsers.find(
-      u => u.username === username && u.password === password
-    );
-
-    if (user) {
-      login(user);
-    } else {
-      setError('Tên đăng nhập hoặc mật khẩu không đúng');
+    try {
+      const response = await authService.login(email, password);
+      // Normalize response: some backends return { user, token }, others return user directly
+      const userPayload = response?.user || response;
+      login(userPayload);
+      // No imperative navigation here — component will re-render and the check below will redirect
+    } catch (error) {
+      setError(error.message || (error?.message) || 'Tên đăng nhập hoặc mật khẩu không đúng');
     }
   };
 
   return (
+    // If already logged in, redirect to dashboard. This lets the AuthContext update trigger a navigation without useNavigate.
+    user ? <Navigate to="/dashboard" replace /> : (
     <div className="login-container">
       <div className="login-box">
         <div className="login-header">
@@ -37,13 +40,13 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">Tên đăng nhập</label>
+            <label htmlFor="email">Tên đăng nhập</label>
             <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Nhập tên đăng nhập"
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Nhập email"
               required
             />
           </div>
@@ -78,6 +81,7 @@ const Login = () => {
         </div>
       </div>
     </div>
+    )
   );
 };
 

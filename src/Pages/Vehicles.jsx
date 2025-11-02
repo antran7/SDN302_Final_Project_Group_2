@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../Context/AuthContext';
-import { mockVehicles, mockPromotions } from '../mockData/vehicles';
-import { Search, Filter, Plus, Edit, Trash2, GitCompare } from 'lucide-react';
+import { Search, Filter, Plus, Edit, Trash2, GitCompare, Loader2 } from 'lucide-react';
 import VehicleDetailModal from '../Components/VehicleDetailModal';
 import ConfirmModal from '../Components/ConfirmModal';
+import { vehiclesService } from '../services/vehicles.service';
 import { toast } from 'sonner';
 import '../Styles/vehicles.css';
+import '../Styles/loading.css';
 
 const Vehicles = () => {
   const { user } = useAuth();
+  const [vehicles, setVehicles] = useState([]);
+  const [promotions, setPromotions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [compareMode, setCompareMode] = useState(false);
@@ -17,6 +22,29 @@ const Vehicles = () => {
   const [deleteVehicle, setDeleteVehicle] = useState(null);
 
   const isEVM = user.role === 'Admin' || user.role === 'EVM Staff';
+
+  // Tải danh sách xe và khuyến mãi
+  useEffect(() => {
+    const loadVehicles = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const [vehiclesData, promotionsData] = await Promise.all([
+          vehiclesService.getVehicles(),
+          vehiclesService.getVehiclePromotions()
+        ]);
+        setVehicles(vehiclesData);
+        setPromotions(promotionsData);
+      } catch (err) {
+        setError(err.message);
+        toast.error(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadVehicles();
+  }, []);
 
   const handleViewDetail = (vehicle) => {
     setSelectedVehicle(vehicle);
@@ -30,12 +58,20 @@ const Vehicles = () => {
     setDeleteVehicle(vehicle);
   };
 
-  const handleConfirmDelete = () => {
-    toast.success(`Đã xóa xe ${deleteVehicle.name}`);
-    setDeleteVehicle(null);
+  const handleConfirmDelete = async () => {
+    try {
+      await vehiclesService.deleteVehicle(deleteVehicle.id);
+      toast.success(`Đã xóa xe ${deleteVehicle.name}`);
+      setDeleteVehicle(null);
+      // Tải lại danh sách xe sau khi xóa
+      const vehiclesData = await vehiclesService.getVehicles();
+      setVehicles(vehiclesData);
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
-  const filteredVehicles = mockVehicles.filter(vehicle => {
+  const filteredVehicles = vehicles.filter(vehicle => {
     const matchesSearch = vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          vehicle.model.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || vehicle.category === selectedCategory;
@@ -50,13 +86,11 @@ const Vehicles = () => {
   };
 
   const getActivePromotions = (vehicleId) => {
-    return mockPromotions.filter(p => 
+    return promotions.filter(p => 
       p.vehicleIds.includes(vehicleId) &&
       new Date(p.endDate) >= new Date()
     );
-  };
-
-  const toggleCompare = (vehicle) => {
+  };  const toggleCompare = (vehicle) => {
     if (compareVehicles.find(v => v.id === vehicle.id)) {
       setCompareVehicles(compareVehicles.filter(v => v.id !== vehicle.id));
     } else if (compareVehicles.length < 3) {
@@ -124,9 +158,35 @@ const Vehicles = () => {
         </div>
       )}
 
-      <div className="vehicles-grid">
-        {filteredVehicles.map(vehicle => {
-          const promotions = getActivePromotions(vehicle.id);
+      {loading ? (
+        <div className="loading-state">
+          <Loader2 className="animate-spin" size={48} />
+          <p>Đang tải danh sách xe...</p>
+        </div>
+      ) : error ? (
+        <div className="error-state">
+          <p>{error}</p>
+          <button 
+            onClick={() => {
+              setLoading(true);
+              setError(null);
+              vehiclesService.getVehicles()
+                .then(data => setVehicles(data))
+                .catch(err => {
+                  setError(err.message);
+                  toast.error(err.message);
+                })
+                .finally(() => setLoading(false));
+            }} 
+            className="retry-btn"
+          >
+            Thử lại
+          </button>
+        </div>
+      ) : (
+        <div className="vehicles-grid">
+          {filteredVehicles.map(vehicle => {
+            const promotions = getActivePromotions(vehicle.id);
           const isComparing = compareVehicles.find(v => v.id === vehicle.id);
 
           return (
@@ -239,10 +299,9 @@ const Vehicles = () => {
               </div>
             </div>
           );
-        })}
-      </div>
-
-      {selectedVehicle && (
+          })}
+        </div>
+      )}      {selectedVehicle && (
         <VehicleDetailModal 
           vehicle={selectedVehicle} 
           onClose={() => setSelectedVehicle(null)} 
