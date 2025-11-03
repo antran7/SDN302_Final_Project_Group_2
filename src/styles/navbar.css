@@ -59,7 +59,8 @@
 
 .notification-btn {
   position: relative;
-  background: none;
+  background: #eee;
+  color: #000;
   border: none;
   cursor: pointer;
   padding: 8px;
@@ -134,7 +135,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: none;
+  background: #eee;
+  color: #000;
   border: 1px solid #e5e7eb;
   padding: 8px 15px;
   border-radius: 8px;

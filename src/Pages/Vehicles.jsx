@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "../Context/AuthContext";
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../Context/AuthContext';
 import {
   Search,
   Filter,
@@ -8,44 +8,49 @@ import {
   Trash2,
   GitCompare,
   Loader2,
-} from "lucide-react";
-import VehicleDetailModal from "../Components/VehicleDetailModal";
-import ConfirmModal from "../Components/ConfirmModal";
-import { vehiclesService } from "../services/vehicles.service";
-import { toast } from "sonner";
-import "../Styles/vehicles.css";
-import "../Styles/loading.css";
+} from 'lucide-react';
+import VehicleDetailModal from '../Components/VehicleDetailModal';
+import VehicleFormModal from '../Components/VehicleFormModal';
+import ConfirmModal from '../Components/ConfirmModal';
+import { vehiclesService } from '../services/vehicles.service';
+import { toast } from 'sonner';
+import '../Styles/vehicles.css';
+import '../Styles/loading.css';
+import '../Styles/form.css';
 
 const Vehicles = () => {
   const { user } = useAuth();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [compareMode, setCompareMode] = useState(false);
   const [compareVehicles, setCompareVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [editVehicle, setEditVehicle] = useState(null);
   const [deleteVehicle, setDeleteVehicle] = useState(null);
+  const [showAddForm, setShowAddForm] = useState(false);
 
-  const isEVM = user.role === "Admin" || user.role === "EVM Staff";
+  const isEVM = user.role === 'ADMIN' || user.role === 'EVM_STAFF';
+  const isDEALER = user.role === 'DEALER_MANAGER' || user.role === 'DEALER_STAFF';
 
   // Tải danh sách xe
-  useEffect(() => {
-    const loadVehicles = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const vehiclesData = await vehiclesService.getVehicles();
-        setVehicles(vehiclesData);
-      } catch (err) {
-        setError(err.message);
-        toast.error(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadVehicles = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const vehiclesData = await vehiclesService.getVehicles();
+      setVehicles(vehiclesData);
+    } catch (err) {
+      setError(err.message);
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadVehicles();
   }, []);
 
@@ -54,23 +59,45 @@ const Vehicles = () => {
   };
 
   const handleEdit = (vehicle) => {
-    toast.success(
-      `Chức năng chỉnh sửa xe ${vehicle.name} đang được phát triển`
-    );
+    setEditVehicle(vehicle);
+  };
+
+  const handleAdd = () => {
+    setShowAddForm(true);
   };
 
   const handleDeleteClick = (vehicle) => {
     setDeleteVehicle(vehicle);
   };
 
+  const handleSubmitAdd = async (formData) => {
+    try {
+      await vehiclesService.createVehicle(formData);
+      toast.success('Thêm xe mới thành công');
+      setShowAddForm(false);
+      loadVehicles(); // Tải lại danh sách xe
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleSubmitEdit = async (formData) => {
+    try {
+      await vehiclesService.updateVehicle(editVehicle._id, formData);
+      toast.success(`Đã cập nhật thông tin xe ${formData.model_name}`);
+      setEditVehicle(null);
+      loadVehicles(); // Tải lại danh sách xe
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   const handleConfirmDelete = async () => {
     try {
-      await vehiclesService.deleteVehicle(deleteVehicle.id);
-      toast.success(`Đã xóa xe ${deleteVehicle.name}`);
+      await vehiclesService.deleteVehicle(deleteVehicle._id);
+      toast.success(`Đã xóa xe ${deleteVehicle.modelName}`);
       setDeleteVehicle(null);
-      // Tải lại danh sách xe sau khi xóa
-      const vehiclesData = await vehiclesService.getVehicles();
-      setVehicles(vehiclesData);
+      loadVehicles(); // Tải lại danh sách xe
     } catch (err) {
       toast.error(err.message);
     }
@@ -81,20 +108,13 @@ const Vehicles = () => {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesCategory =
-      selectedCategory === "all" || vehicle.body_type === selectedCategory;
+      selectedCategory === 'all' || vehicle.body_type === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
-
   const toggleCompare = (vehicle) => {
-    if (compareVehicles.find((v) => v.id === vehicle.id)) {
-      setCompareVehicles(compareVehicles.filter((v) => v.id !== vehicle.id));
+    if (compareVehicles.find((v) => v.vehicle_id === vehicle._id)) {
+      setCompareVehicles(compareVehicles.filter((v) => v.vehicle_id !== vehicle._id));
     } else if (compareVehicles.length < 3) {
       setCompareVehicles([...compareVehicles, vehicle]);
     }
@@ -103,10 +123,10 @@ const Vehicles = () => {
   return (
     <div className="vehicles-container">
       <div className="vehicles-header">
-        <h1>{isEVM ? "Quản lý xe điện" : "Danh mục xe điện"}</h1>
+        <h1>{isEVM ? 'Quản lý xe điện' : 'Danh mục xe điện'}</h1>
         <div className="vehicles-actions">
           <button
-            className={`compare-btn ${compareMode ? "active" : ""}`}
+            className={`compare-btn ${compareMode ? 'active' : ''}`}
             onClick={() => {
               setCompareMode(!compareMode);
               setCompareVehicles([]);
@@ -115,14 +135,15 @@ const Vehicles = () => {
             <GitCompare size={20} />
             So sánh xe
           </button>
-          {isEVM && (
-            <button className="add-btn">
+          {isDEALER && (
+            <button className="add-btn" onClick={handleAdd}>
               <Plus size={20} />
               Thêm xe mới
             </button>
           )}
         </div>
       </div>
+
       <div className="vehicles-filters">
         <div className="search-box">
           <Search size={20} />
@@ -150,6 +171,7 @@ const Vehicles = () => {
           </select>
         </div>
       </div>
+
       {compareMode && compareVehicles.length > 0 && (
         <div className="compare-banner">
           <span>Đã chọn {compareVehicles.length}/3 xe để so sánh</span>
@@ -158,6 +180,7 @@ const Vehicles = () => {
           )}
         </div>
       )}
+
       {loading ? (
         <div className="loading-state">
           <Loader2 className="animate-spin" size={48} />
@@ -166,21 +189,7 @@ const Vehicles = () => {
       ) : error ? (
         <div className="error-state">
           <p>{error}</p>
-          <button
-            onClick={() => {
-              setLoading(true);
-              setError(null);
-              vehiclesService
-                .getVehicles()
-                .then((data) => setVehicles(data))
-                .catch((err) => {
-                  setError(err.message);
-                  toast.error(err.message);
-                })
-                .finally(() => setLoading(false));
-            }}
-            className="retry-btn"
-          >
+          <button onClick={loadVehicles} className="retry-btn">
             Thử lại
           </button>
         </div>
@@ -188,13 +197,13 @@ const Vehicles = () => {
         <div className="vehicles-grid">
           {filteredVehicles.map((vehicle) => {
             const isComparing = compareVehicles.find(
-              (v) => v.id === vehicle.id
+              (v) => v.vehicle_id === vehicle._id
             );
 
             return (
               <div
                 key={vehicle._id}
-                className={`vehicle-card ${isComparing ? "comparing" : ""}`}
+                className={`vehicle-card ${isComparing ? 'comparing' : ''}`}
               >
                 <div className="vehicle-image">
                   <img
@@ -207,11 +216,11 @@ const Vehicles = () => {
                   {compareMode && (
                     <button
                       className={`compare-checkbox ${
-                        isComparing ? "checked" : ""
+                        isComparing ? 'checked' : ''
                       }`}
                       onClick={() => toggleCompare(vehicle)}
                     >
-                      {isComparing && "✓"}
+                      {isComparing && '✓'}
                     </button>
                   )}
                 </div>
@@ -234,7 +243,7 @@ const Vehicles = () => {
                     <div className="spec-item">
                       <span className="spec-label">Bảo hành</span>
                       <span className="spec-value">
-                        {vehicle.warranty_years} năm
+                        {vehicle.warrantyYears} năm
                       </span>
                     </div>
                     <div className="spec-item">
@@ -247,43 +256,6 @@ const Vehicles = () => {
                     <p className="vehicle-description">{vehicle.description}</p>
                   )}
 
-                  {/* <div className="vehicle-colors">
-                  <span>Màu sắc:</span>
-                  <div className="color-list">
-                    {vehicle.colors.map(color => (
-                      <span key={color} className="color-badge">{color}</span>
-                    ))}
-                  </div>
-                </div> */}
-
-                  {isEVM ? (
-                    <div className="vehicle-prices">
-                      <div className="price-row">
-                        <span>Giá bán lẻ:</span>
-                        <span className="price">
-                          {formatCurrency(vehicle.price)}
-                        </span>
-                      </div>
-                      <div className="price-row">
-                        <span>Giá sỉ:</span>
-                        <span className="price wholesale">
-                          {formatCurrency(vehicle.wholesalePrice)}
-                        </span>
-                      </div>
-                      <div className="price-row">
-                        <span>Tồn kho:</span>
-                        <span className="stock">{vehicle.stock} xe</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="vehicle-price">
-                      <span className="price-label">Giá bán:</span>
-                      <span className="price">
-                        {formatCurrency(vehicle.price)}
-                      </span>
-                    </div>
-                  )}
-
                   <div className="vehicle-actions">
                     <button
                       className="btn-detail"
@@ -291,7 +263,7 @@ const Vehicles = () => {
                     >
                       Chi tiết
                     </button>
-                    {isEVM && (
+                    {isDEALER && (
                       <>
                         <button
                           className="btn-icon"
@@ -313,17 +285,35 @@ const Vehicles = () => {
             );
           })}
         </div>
-      )}{" "}
+      )}
+
       {selectedVehicle && (
         <VehicleDetailModal
           vehicle={selectedVehicle}
           onClose={() => setSelectedVehicle(null)}
         />
       )}
+
+      {showAddForm && (
+        <VehicleFormModal
+          onClose={() => setShowAddForm(false)}
+          onSubmit={handleSubmitAdd}
+        />
+      )}
+
+      {editVehicle && (
+        <VehicleFormModal
+          vehicle={editVehicle}
+          isEdit={true}
+          onClose={() => setEditVehicle(null)}
+          onSubmit={handleSubmitEdit}
+        />
+      )}
+
       {deleteVehicle && (
         <ConfirmModal
           title="Xác nhận xóa"
-          message={`Bạn có chắc chắn muốn xóa xe ${deleteVehicle.name}? Hành động này không thể hoàn tác.`}
+          message={`Bạn có chắc chắn muốn xóa xe ${deleteVehicle.modelName}? Hành động này không thể hoàn tác.`}
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeleteVehicle(null)}
         />

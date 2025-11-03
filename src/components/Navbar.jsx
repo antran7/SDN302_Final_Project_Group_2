@@ -3,6 +3,7 @@ import { useAuth } from '../Context/AuthContext';
 import { useApp } from '../Context/AppContext';
 import { Bell, User, LogOut, Menu, Settings } from 'lucide-react';
 import '../Styles/navbar.css';
+import { authService } from '../services/auth.service';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -10,7 +11,8 @@ const Navbar = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await authService.logout();
     logout();
   };
 

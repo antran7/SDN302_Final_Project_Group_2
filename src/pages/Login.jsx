@@ -14,7 +14,6 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    console.log(email, password);
 
     try {
       const response = await authService.login(email, password);
@@ -74,10 +73,10 @@ const Login = () => {
         <div className="login-demo-accounts">
           <p>Tài khoản demo:</p>
           <ul>
-            <li><strong>Admin:</strong> admin / admin123</li>
-            <li><strong>EVM Staff:</strong> evmstaff / evm123</li>
-            <li><strong>Dealer Manager:</strong> dealer1 / dealer123</li>
-            <li><strong>Dealer Staff:</strong> staff1 / staff123</li>
+            <li><strong>Admin:</strong> admin / 123456</li>
+            <li><strong>EVM Staff:</strong> evmstaff / 123456</li>
+            <li><strong>Dealer Manager:</strong> dealerstaff / 123456</li>
+            <li><strong>Dealer Staff:</strong> dealermanager / 123456</li>
           </ul>
         </div>
       </div>
